@@ -30,8 +30,8 @@ function Cabecera() {
           Hablar del tema, no.
         </h1>
         <p className="bajada rv" style={vars({ '--i': 1 })}>
-          Seis de cada diez adolescentes en Argentina apuestan o tienen cerca a alguien que apuesta. La publicidad les
-          llega a la gran mayoría. La conversación, a muy pocos.
+          Seis de cada diez adolescentes en Argentina apuestan online o tienen cerca a alguien que lo hace.
+          La publicidad les llega a la gran mayoría, pero pocos conversan del tema en sus hogares.
         </p>
       </div>
       <div className="ficha rv" style={vars({ '--i': 2 })}>
