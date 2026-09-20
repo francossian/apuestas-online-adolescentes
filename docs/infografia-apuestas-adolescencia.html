@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Apostar es fácil. Hablar del tema, no.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --papel:#F3F3F0;
+    --tinta:#121416;
+    --acento:#E8532F;
+    --acento-2:#F5AB94;
+    --gris:#9A9A93;
+    --gris-2:#D6D6D0;
+    --pista:#E6E6E1;
+    --linea:#D0D0CA;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *,*::before,*::after{box-sizing:inherit;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--papel);
+    color:var(--tinta);
+    font-family:"Archivo",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+    font-variation-settings:"wdth" 100,"wght" 400;
+    display:flex;align-items:center;justify-content:center;
+    overflow:auto;
+  }
+
+  /* ---- lienzo fijo 1920x1080, escalado para caber en pantalla ---- */
+  .escala{width:100%;display:flex;justify-content:center}
+  .lienzo{
+    width:1920px;height:1080px;flex:none;
+    background:var(--papel);
+    padding:64px 72px 54px;
+    display:flex;flex-direction:column;
+    transform-origin:top center;
+  }
+
+  /* ---------------- encabezado ---------------- */
+  .cabecera{display:flex;align-items:flex-end;justify-content:space-between;gap:48px}
+  .cabecera > div:first-child{min-width:0}
+  h1{
+    font-variation-settings:"wdth" 80,"wght" 800;
+    font-size:76px;line-height:0.95;letter-spacing:-0.025em;
+    white-space:nowrap;
+  }
+  .bajada{
+    margin-top:18px;
+    font-size:21px;line-height:1.42;max-width:62ch;
+    font-variation-settings:"wdth" 100,"wght" 400;
+    color:#3A3E40;
+  }
+  .ficha{
+    flex:none;text-align:right;font-size:13.5px;line-height:1.85;color:#5C6063;
+    border-left:1px solid var(--linea);padding-left:26px;
+  }
+  .ficha b{font-variation-settings:"wdth" 100,"wght" 700;color:var(--tinta)}
+
+  /* ---------------- riel de lectura ---------------- */
+  .riel{position:relative;height:1px;background:var(--linea);margin:38px 0 0}
+  .riel .nodo{
+    position:absolute;top:-4.5px;width:10px;height:10px;border-radius:50%;
+    background:var(--papel);border:2px solid var(--acento);
+  }
+
+  /* ---------------- cuerpo ---------------- */
+  .cuerpo{
+    flex:1;display:grid;
+    grid-template-columns:repeat(5,1fr);
+    column-gap:0;
+    padding-top:26px;
+  }
+  .bloque{display:flex;flex-direction:column;position:relative;padding:0 26px}
+  .bloque:first-child{padding-left:0}
+  .bloque + .bloque{border-left:1px solid var(--linea)}
+
+  .entrada{min-height:300px;display:flex;flex-direction:column}
+  .pregunta{
+    font-size:19px;font-variation-settings:"wdth" 100,"wght" 650;
+    letter-spacing:-0.01em;min-height:46px;
+  }
+  .cifra{
+    font-variation-settings:"wdth" 70,"wght" 800;
+    font-size:96px;line-height:0.86;letter-spacing:-0.03em;
+    color:var(--acento);margin-top:6px;
+  }
+  .cifra small{font-size:52px;letter-spacing:-0.02em}
+  .glosa{
+    margin-top:14px;font-size:16.5px;line-height:1.4;
+    font-variation-settings:"wdth" 100,"wght" 500;max-width:30ch;
+  }
+  .lectura{
+    margin-top:14px;font-size:14.5px;line-height:1.5;color:#4A4E50;max-width:34ch;
+  }
+  .visual{flex:1;display:flex;flex-direction:column;padding-top:24px}
+  .base{
+    margin-top:auto;padding-top:14px;font-size:11.5px;line-height:1.45;color:#82868A;
+    border-top:1px solid var(--linea);
+  }
+  .remate{
+    margin-top:12px;font-size:14px;line-height:1.5;
+    font-variation-settings:"wdth" 100,"wght" 500;
+  }
+  .marca{background:var(--tinta);color:var(--papel);padding:3px 7px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+  .rojo{color:var(--acento);font-variation-settings:"wdth" 100,"wght" 700}
+
+  /* ---------------- bloque 1: grilla ---------------- */
+  .grilla{display:grid;grid-template-columns:repeat(20,1fr);gap:5px;width:100%}
+  .pt{width:100%;aspect-ratio:1;border-radius:50%}
+  .pt.a{background:var(--acento)}
+  .pt.b{background:var(--acento-2)}
+  .pt.c{background:var(--gris)}
+  .pt.d{background:var(--gris-2)}
+  .leyenda{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;font-size:12.5px;color:#4A4E50}
+  .leyenda span{display:flex;align-items:center;gap:7px}
+  .swatch{width:9px;height:9px;border-radius:50%;flex:none}
+
+  .genero{margin-top:22px;border-top:1px solid var(--linea);padding-top:14px}
+  .gfila{display:grid;grid-template-columns:64px 1fr 36px;align-items:center;gap:10px;margin-bottom:7px}
+  .getiqueta{font-size:13px;color:#4A4E50}
+  .gbarra{height:16px;background:var(--acento)}
+  .gvalor{font-size:13.5px;font-variation-settings:"wdth" 100,"wght" 700;color:var(--tinta);text-align:right}
+
+  /* ---------------- bloque 2: barras de exposición ---------------- */
+  .barras{display:flex;flex-direction:column;gap:11px}
+  .bfila{display:flex;align-items:center;gap:10px}
+  .betiqueta{font-size:12.5px;color:#4A4E50;width:92px;flex:none;line-height:1.25}
+  .btrack{flex:1;height:26px;background:var(--pista);position:relative}
+  .bfill{height:100%;background:var(--acento)}
+  .bfill.b2{background:var(--acento-2)}
+  .bfill.b3{background:var(--gris)}
+  .bfila b{font-size:14px;font-variation-settings:"wdth" 100,"wght" 700;width:38px;text-align:right;flex:none}
+
+  /* ---------------- bloque 3: dominios ---------------- */
+  .dominios{display:flex;align-items:center;gap:12px;margin-top:4px}
+  .chip{
+    border:1.5px solid var(--tinta);padding:8px 14px;font-size:15px;
+    font-variation-settings:"wdth" 90,"wght" 700;
+  }
+  .interrog{font-size:26px;font-variation-settings:"wdth" 80,"wght" 800;color:var(--acento)}
+  .parstats{display:flex;gap:34px;margin-bottom:22px}
+  .parstats div{font-size:13px;color:#4A4E50;line-height:1.35}
+  .parstats b{
+    display:block;font-variation-settings:"wdth" 74,"wght" 800;
+    font-size:40px;color:var(--tinta);line-height:1;margin-bottom:5px;
+  }
+
+  /* ---------------- bloque 4: silencio ---------------- */
+  .globos{display:flex;flex-direction:column;gap:16px}
+  .globo{display:flex;align-items:center;gap:13px}
+  .globo svg{flex:none}
+  .globo div{font-size:13px;color:#4A4E50;line-height:1.3}
+  .globo b{
+    display:block;font-variation-settings:"wdth" 74,"wght" 800;
+    font-size:30px;color:var(--tinta);line-height:1;margin-bottom:4px;
+  }
+
+  /* ---------------- bloque 5: pedidos ---------------- */
+  .pedidos{display:flex;flex-direction:column;gap:13px}
+  .pedido{display:flex;gap:11px;font-size:14px;line-height:1.4;color:#2C3032}
+  .cuadro{width:11px;height:11px;background:var(--acento);flex:none;margin-top:5px}
+
+  /* ---------------- pie ---------------- */
+  .pie{
+    margin-top:22px;border-top:1px solid var(--linea);padding-top:14px;
+    display:flex;justify-content:space-between;align-items:baseline;gap:40px;
+    font-size:12px;color:#7A7E82;line-height:1.5;
+  }
+  .pie b{font-variation-settings:"wdth" 100,"wght" 600;color:#4A4E50}
+
+  @media (max-width:1990px){
+    body{align-items:flex-start;padding:16px 0}
+  }
+</style>
+</head>
+<body>
+<div class="escala">
+<div class="lienzo" id="lienzo">
+
+  <header class="cabecera">
+    <div>
+      <h1>Para los adolescentes, apostar es fácil.<br>Hablar del tema, no.</h1>
+      <p class="bajada">Seis de cada diez adolescentes en Argentina ya conviven con las apuestas online: apuestan o tienen cerca a alguien que apuesta. La publicidad les llega a casi todos. La conversación, a casi ninguno.</p>
+    </div>
+    <div class="ficha">
+      <b>11.421</b> adolescentes de 13 a 18 años<br>
+      <b>231</b> escuelas secundarias<br>
+      <b>16</b> provincias<br>
+      Campo: agosto a octubre de 2025
+    </div>
+  </header>
+
+  <div class="riel" id="riel"></div>
+
+  <main class="cuerpo">
+
+    <!-- 1 ......................................................... -->
+    <section class="bloque">
+      <div class="entrada">
+      <h2 class="pregunta">¿A cuántos alcanza?</h2>
+      <p class="cifra">61<small>%</small></p>
+      <p class="glosa">de los adolescentes en Argentina está alcanzado por las apuestas online.</p>
+      <p class="lectura">Casi la mitad de quienes nunca apostaron tiene cerca a alguien que sí. La práctica se ve, se comenta y se normaliza.</p>
+      </div>
+
+      <div class="visual">
+        <div class="grilla" id="grilla"></div>
+        <div class="leyenda">
+          <span><i class="swatch" style="background:var(--acento)"></i>Apuesta o apostó · 16</span>
+          <span><i class="swatch" style="background:var(--acento-2)"></i>Conoce a alguien · 45</span>
+          <span><i class="swatch" style="background:var(--gris)"></i>Ni apuesta ni conoce · 27</span>
+          <span><i class="swatch" style="background:var(--gris-2)"></i>Nunca escuchó del tema · 12</span>
+        </div>
+
+        <div class="genero">
+          <div class="gfila">
+            <span class="getiqueta">Varones</span>
+            <div class="gbarra" style="width:100%"></div>
+            <b class="gvalor">24%</b>
+          </div>
+          <div class="gfila">
+            <span class="getiqueta">Mujeres</span>
+            <div class="gbarra" style="width:33.3%"></div>
+            <b class="gvalor">8%</b>
+          </div>
+          <p class="remate" style="margin-top:12px;font-size:13.5px">Los varones apuestan <b style="font-variation-settings:'wdth' 100,'wght' 700">3 veces más</b> que las mujeres.</p>
+        </div>
+
+        <p class="base">Base: total de adolescentes encuestados (11.421 casos). La participación se cuadruplica entre los 13 y los 18 años, del 6% al 24%.</p>
+      </div>
+    </section>
+
+    <!-- 2 ......................................................... -->
+    <section class="bloque">
+      <div class="entrada">
+      <h2 class="pregunta">¿Cómo aparece en sus vidas?</h2>
+      <p class="cifra">78<small>%</small></p>
+      <p class="glosa">de los adolescentes vio publicidad de apuestas, haya apostado o no.</p>
+      <p class="lectura">La exposición es casi idéntica en los tres grupos: la publicidad no sigue al consumo, lo precede.</p>
+      </div>
+
+      <div class="visual">
+        <div class="barras">
+          <div class="bfila">
+            <span class="betiqueta">Apuesta o apostó</span>
+            <div class="btrack"><div class="bfill" style="width:78%"></div></div>
+            <b>78%</b>
+          </div>
+          <div class="bfila">
+            <span class="betiqueta">Conoce a alguien</span>
+            <div class="btrack"><div class="bfill b2" style="width:79%"></div></div>
+            <b>79%</b>
+          </div>
+          <div class="bfila">
+            <span class="betiqueta">Ni apuesta ni conoce</span>
+            <div class="btrack"><div class="bfill b3" style="width:71%"></div></div>
+            <b>71%</b>
+          </div>
+        </div>
+
+        <p class="remate"><span class="marca">53% entró creyendo que se gana plata fácil y rápido.</span></p>
+        <p class="remate"><span class="marca">44% recibió un bono promocional siendo menor de edad.</span></p>
+
+        <p class="base">Base: total de encuestados, según vínculo con la práctica. La exposición a publicidad de influencers o figuras famosas va del 66% al 76%.</p>
+      </div>
+    </section>
+
+    <!-- 3 ......................................................... -->
+    <section class="bloque">
+      <div class="entrada">
+      <h2 class="pregunta">¿Qué tan difícil es entrar?</h2>
+      <p class="cifra">93<small>%</small></p>
+      <p class="glosa">de quienes apuestan dice que acceder es fácil o muy fácil.</p>
+      <p class="lectura">Celular propio y billetera virtual: una práctica individual, fuera del campo de visión adulta.</p>
+      </div>
+
+      <div class="visual">
+        <div class="parstats">
+          <div><b>83%</b>apuesta desde<br>su celular propio</div>
+          <div><b>83%</b>paga con<br>billetera virtual</div>
+        </div>
+
+        <div class="dominios">
+          <span class="chip">.bet.ar</span>
+          <span class="interrog">?</span>
+          <span class="chip">.com</span>
+        </div>
+        <p class="remate" style="margin-top:12px">Entre 51% y 66% no distingue una plataforma habilitada de una ilegal.</p>
+        <p class="remate"><span class="rojo">1 de cada 8</span> quedó debiendo dinero.</p>
+
+        <p class="base">Base: adolescentes con experiencia directa en apuestas online. El 43% accedió con ayuda de un tercero; en el 57% de esos casos, amistades o compañeros.</p>
+      </div>
+    </section>
+
+    <!-- 4 ......................................................... -->
+    <section class="bloque">
+      <div class="entrada">
+      <h2 class="pregunta">¿Dónde se habla del tema?</h2>
+      <p class="cifra">85<small>%</small></p>
+      <p class="glosa">de los adolescentes habla poco o nada del tema en su casa.</p>
+      <p class="lectura">Un fenómeno que alcanza al 61% casi no se conversa donde podría detectarse a tiempo.</p>
+      </div>
+
+      <div class="visual">
+        <div class="globos">
+          <div class="globo">
+            <svg width="62" height="52" viewBox="0 0 62 52" aria-hidden="true">
+              <path d="M2 2h58v34H22L9 48V36H2V2z" fill="none" stroke="var(--gris)" stroke-width="2"/>
+            </svg>
+            <div><b>84–87%</b>habla poco o nunca<br>del tema en el hogar</div>
+          </div>
+          <div class="globo">
+            <svg width="62" height="52" viewBox="0 0 62 52" aria-hidden="true">
+              <path d="M2 2h58v34H22L9 48V36H2V2z" fill="none" stroke="var(--gris)" stroke-width="2"/>
+            </svg>
+            <div><b>78–79%</b>habla poco o nunca<br>del tema en la escuela</div>
+          </div>
+        </div>
+
+        <p class="remate" style="margin-top:20px">Reconocen el riesgo, pero no se preocupan: solo el <b style="font-variation-settings:'wdth' 100,'wght' 700">20%</b> de quienes apuestan dice preocuparse mucho o bastante, contra el 36–39% de quienes no participan.</p>
+
+        <p class="base">Base: total de encuestados, según vínculo con la práctica. Entre el 79% y el 89% reconoce que las apuestas generan adicción.</p>
+      </div>
+    </section>
+
+    <!-- 5 ......................................................... -->
+    <section class="bloque">
+      <div class="entrada">
+      <h2 class="pregunta">¿Qué piden los adolescentes?</h2>
+      <p class="cifra">75<small>%</small></p>
+      <p class="glosa">de los adolescentes pide controles más estrictos sobre las plataformas.</p>
+      <p class="lectura">La demanda es propia. Ocho de cada diez creen que las medidas actuales no funcionan.</p>
+      </div>
+
+      <div class="visual">
+        <div class="pedidos">
+          <div class="pedido"><i class="cuadro"></i><span>Verificar identidad y edad en las billeteras virtuales, el nodo donde hoy no se controla nada.</span></div>
+          <div class="pedido"><i class="cuadro"></i><span>Regular la publicidad y la promoción encubierta de influencers y figuras públicas.</span></div>
+          <div class="pedido"><i class="cuadro"></i><span>Talleres en la escuela: 4 de cada 10 los reclaman.</span></div>
+          <div class="pedido"><i class="cuadro"></i><span>La herramienta más valorada por ellos mismos: poder contarle a un adulto cercano sin sentirse juzgados.</span></div>
+        </div>
+
+        <p class="base">Base: total de encuestados. Los contenidos más pedidos son conocer los riesgos, entender cómo operan los mecanismos de captación y escuchar experiencias reales.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="pie">
+    <p>Fuente: &#8220;Apuestas Online y Adolescencia: construyendo entornos seguros&#8221;. Argentina. Observatorio Humanitario de Cruz Roja Argentina, 2025.</p>
+    <p style="flex:none">Visualización: <b>Franco Guiragossian</b></p>
+  </footer>
+
+</div>
+</div>
+
+<script>
+  // Grilla de 100 puntos: 16 participa / 45 conoce / 27 ni uno ni otro / 12 nunca escuchó
+  (function(){
+    var g = document.getElementById('grilla');
+    if(!g) return;
+    var plan = [[16,'a'],[45,'b'],[27,'c'],[12,'d']], html = '';
+    plan.forEach(function(p){
+      for(var i=0;i<p[0];i++){ html += '<i class="pt '+p[1]+'"></i>'; }
+    });
+    g.innerHTML = html;
+  })();
+
+  // Nodos del riel, alineados al centro de cada bloque
+  (function(){
+    var riel = document.getElementById('riel');
+    var bloques = document.querySelectorAll('.bloque');
+    if(!riel || !bloques.length) return;
+    var base = riel.getBoundingClientRect();
+    bloques.forEach(function(b){
+      var r = b.getBoundingClientRect();
+      var n = document.createElement('i');
+      n.className = 'nodo';
+      n.style.left = (r.left - base.left) + 'px';
+      riel.appendChild(n);
+    });
+  })();
+
+  // Escalar el lienzo de 1920x1080 para que entre en la pantalla
+  (function(){
+    var l = document.getElementById('lienzo');
+    if(!l) return;
+    function fit(){
+      var s = Math.min(1, (window.innerWidth - 24) / 1920);
+      l.style.transform = 'scale(' + s + ')';
+      l.parentElement.style.height = (1080 * s) + 'px';
+    }
+    fit();
+    window.addEventListener('resize', fit);
+  })();
+</script>
+</body>
+</html>
